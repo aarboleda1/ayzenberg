@@ -5,7 +5,7 @@ class FileDirectory {
         this.files = {};
     }
 
-    create(file) {
+    Create(file) {
         const {files} = this;
         
 
@@ -32,7 +32,7 @@ class FileDirectory {
         }
     }
 
-    move(path) {
+    Move(path) {
 
         //MOVE grains/squash vegetables
         const { files } = this;
@@ -54,8 +54,8 @@ class FileDirectory {
             // console.log(path) this takes out the second word allowing there to be a correct path to the target directory. 
             path = path.join('/');
             // you have to delete that path and folder before making the move to the new directory.
-            this.delete(`${path}`)
-            this.create(`${filePath}/${lastWord}`)
+            this.Delete(`${path}`)
+            this.Create(`${filePath}/${lastWord}`)
         } else {
             const splitPath = path.split(' ');
             const objPath = Object.assign(files[splitPath[0]]);
@@ -72,8 +72,8 @@ class FileDirectory {
             // checking if there is a folder path. if not then you have to create a new path and delete the old folder. 
             let stringPath = fileString(files[splitPath[0]]);
             if(stringPath.length === 0) {
-                this.create(`${splitPath[1]}/${splitPath[0]}`)
-                this.delete(`${splitPath[0]}`);
+                this.Create(`${splitPath[1]}/${splitPath[0]}`)
+                this.Delete(`${splitPath[0]}`);
             } else {
                 // what happens if there are nested folders then you have to retrieve the whole file tree and move it into the new route. 
                 stringPath = stringPath.split(' ')
@@ -83,16 +83,16 @@ class FileDirectory {
                     pathToCreate += '/' + stringPath[i];
                 }
                 // you have to create a new path each iteration
-                this.create(pathToCreate);
+                this.Create(pathToCreate);
                 // reassign nested object to new folder tree. 
                 files[splitPath[0]] = objPath;
-                this.delete(`${splitPath[0]}`);
+                this.Delete(`${splitPath[0]}`);
             }
         }
         return;
     }
 
-    delete(route) {
+    Delete(route) {
         const {files} = this;
         
         if(route.includes('/')) {
@@ -126,7 +126,7 @@ class FileDirectory {
 
     }
 
-    list() {
+    List() {
         const { files } = this;
 
         // this function grabs each nested object key and at each recursive call it will increment spacer and push the value into an array.
@@ -155,20 +155,20 @@ class FileDirectory {
 }
 
 const fileDirectory = new FileDirectory;
-console.log(fileDirectory.create('fruits'));
-console.log(fileDirectory.create('vegetables'));
-console.log(fileDirectory.create('grains'));
-console.log(fileDirectory.create('fruits/apples'));
-console.log(fileDirectory.create('fruits/apples/fuji'));
-console.log(fileDirectory.create('grains/squash'));
-console.log(fileDirectory.move('grains/squash vegetables'));
-console.log(fileDirectory.create('foods'));
-console.log(fileDirectory.move('grains foods'));
-console.log(fileDirectory.move('fruits foods'));
-console.log(fileDirectory.move('vegetables foods'));
-console.log(fileDirectory.delete('fruits/apples'));
-console.log(fileDirectory.delete('foods/fruits/apples'));
-console.log(fileDirectory.list());
+console.log(fileDirectory.Create('fruits'));
+console.log(fileDirectory.Create('vegetables'));
+console.log(fileDirectory.Create('grains'));
+console.log(fileDirectory.Create('fruits/apples'));
+console.log(fileDirectory.Create('fruits/apples/fuji'));
+console.log(fileDirectory.Create('grains/squash'));
+console.log(fileDirectory.Move('grains/squash vegetables'));
+console.log(fileDirectory.Create('foods'));
+console.log(fileDirectory.Move('grains foods'));
+console.log(fileDirectory.Move('fruits foods'));
+console.log(fileDirectory.Move('vegetables foods'));
+console.log(fileDirectory.Delete('fruits/apples'));
+console.log(fileDirectory.Delete('foods/fruits/apples'));
+console.log(fileDirectory.List());
 
 
 
