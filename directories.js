@@ -114,8 +114,10 @@ class FolderDirectory {
             }
             return printList
         }
+        // AA: name this folderList
         const list = folderList(files)
         let string = '';
+        // AA: Use forEach here?
         for(let i = 0; i < list.length; i++) {
             if(i < list.length - 1) {
                 string += list[i] + '\n';
@@ -134,6 +136,7 @@ class FolderDirectory {
 
 const fileSystem = new FolderDirectory;
 
+// AA: Let's put all of this below into an example file or test case
 let inputString = 
 `CREATE fruits
 CREATE vegetables
@@ -153,7 +156,6 @@ DELETE foods/fruits/apples
 LIST`
 
 inputString = inputString.split('\n')
-
 // iterate through input string and check first argument in order to invoke correct method. Log the input string. 
 
 for(let i = 0; i < inputString.length; i++) {
@@ -174,37 +176,3 @@ for(let i = 0; i < inputString.length; i++) {
 
 
 module.exports = FolderDirectory;
-
-// const fileDirectory = new FileDirectory;
-// console.log('CREATE fruits')
-// fileDirectory.Create('fruits');
-// console.log('CREATE vegetables')
-// fileDirectory.Create('vegetables');
-// console.log('CREATE grains')
-// fileDirectory.Create('grains');
-// console.log('CREATE fruits/apples')
-// fileDirectory.Create('fruits/apples');
-// console.log('CREATE fruits/apples/fuji')
-// fileDirectory.Create('fruits/apples/fuji');
-// fileDirectory.List();
-// console.log('CREATE grains/squash')
-// fileDirectory.Create('grains/squash');
-// console.log('MOVE grains/squash vegetables', fileDirectory.Move('grains/squash vegetables'));
-// console.log('CREATE foods')
-// fileDirectory.Create('foods');
-// console.log('MOVE grains foods',fileDirectory.Move('grains foods'));
-// console.log('MOVE fruits foods',fileDirectory.Move('fruits foods'));
-// console.log('MOVE vegetables foods',fileDirectory.Move('vegetables foods'));
-// fileDirectory.List();
-// console.log('DELETE fruits/apples')
-// fileDirectory.Delete('fruits/apples');
-// console.log('DELETE foods/fruits/apples')
-// fileDirectory.Delete('foods/fruits/apples');
-// fileDirectory.List();
-
-
-
-
-
-
-
