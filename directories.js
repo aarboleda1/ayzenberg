@@ -1,175 +1,207 @@
+class FolderDirectory {
 
-
-class FileDirectory {
-
-    constructor(fileName) {
+    constructor() {
         this.files = {};
     }
 
-    Create(file) {
-        const {files} = this;
-        
-
-        // if passed in file path includes / then you will split the folder structure into an array
-        if(file.includes('/')) {
-            file = file.split('/')
-            // fileSearch function will check 
-            function fileSearch(fileTree) {
-                // base case, if array of strings passed in has a length of 1 then return files. 
-                if(file.length === 1) return fileTree;
-
-                // check for nested objects and slice and create a shortened array so you can look into the next nested object
-                const innerObj = fileTree[file[0]];
-                file = file.slice(1);
-                innerObj[file[0]] = {}
-                fileSearch(innerObj)
+    Create(folder) {
+        const { files } = this;
+        if(this.isValidInput(folder)) {
+            if(folder.includes('/')) {
+                folder = folder.split('/')
+                function folderSearch(folderTree, pointer = 0) {
+                    if(pointer === folder.length - 1) return folderTree;
+                    const innerObj = folderTree[folder[pointer]];
+                    pointer++;
+                    innerObj[folder[pointer]] = {}
+                    folderSearch(innerObj, pointer)
+                }
+                return folderSearch(files);
+            } else {
+                files[folder] = {};
+                return;
             }
-            fileSearch(files);
-            return;
-        } else {
-            // if there is no extra path then just create a property using the string passed in and assign it to an empty object.
-            files[file] = {};
-            return;
         }
+        return 'Not Valid';
     }
 
     Move(path) {
-
-        //MOVE grains/squash vegetables
         const { files } = this;
-        // check if there is a /
-            // if there is get the last word after the slash
-            // save that to a variable and then delete it from the object
-        // call create method with the last word / variable
-        
-        // if there is no / then just go to that property in file and then invoke create with the two concated
+        path = path.split(' ');
+        let source = path[0];
+        const target = path[1];
 
-        if(path.includes('/')) {
-            path = path.split('/');
-            // console.log(path) it returns an array ex) ['grains', 'squash vegetables']
-            // lastElement grabs the last element and splits it so you can grab the last word
-            const lastElement = path[path.length - 1].split(' ');
-            const lastWord = lastElement[0];
-            const filePath = lastElement[1];
-            path[path.length - 1] = lastWord;
-            // console.log(path) this takes out the second word allowing there to be a correct path to the target directory. 
-            path = path.join('/');
-            // you have to delete that path and folder before making the move to the new directory.
-            this.Delete(`${path}`)
-            this.Create(`${filePath}/${lastWord}`)
+        if(source.includes('/')) {
+            source = source.split('/');
+            const folder = source[source.length - 1];
+            source = source.join('/');
+            this.Delete(`${source}`)
+            this.Create(`${target}/${folder}`)
         } else {
-            const splitPath = path.split(' ');
-            const objPath = Object.assign(files[splitPath[0]]);
+            const filePath = path;
+            const folder = Object.assign(files[filePath[0]]);
+
             function fileString(obj, string = '') {
                 const keys = Object.keys(obj);
                 if(keys.length === 0) return string;
                 for(let i = 0; i < keys.length; i++) {
-                    string += keys[i] + ' '
+                    string += keys[i] + ' ';
                     if(obj[keys[i]]) {
                         return fileString(obj[keys[i]], string);
                     }
                 }
             }
-            // checking if there is a folder path. if not then you have to create a new path and delete the old folder. 
-            let stringPath = fileString(files[splitPath[0]]);
+            let stringPath = fileString(files[filePath[0]]);
             if(stringPath.length === 0) {
-                this.Create(`${splitPath[1]}/${splitPath[0]}`)
-                this.Delete(`${splitPath[0]}`);
+                this.Create(`${filePath[1]}/${filePath[0]}`)
+                this.Delete(`${filePath[0]}`);
             } else {
-                // what happens if there are nested folders then you have to retrieve the whole file tree and move it into the new route. 
                 stringPath = stringPath.split(' ')
-                stringPath.pop()
-                let pathToCreate = `${splitPath[1]}/${splitPath[0]}`
+                stringPath.pop();
+                let folderObject = filePath[0]
+                let pathToCreate = `${filePath[1]}/${filePath[0]}`
                 for(let i = 0; i < stringPath.length; i++) {
                     pathToCreate += '/' + stringPath[i];
                 }
-                // you have to create a new path each iteration
                 this.Create(pathToCreate);
-                // reassign nested object to new folder tree. 
-                files[splitPath[0]] = objPath;
-                this.Delete(`${splitPath[0]}`);
+                files[filePath[0]] = folder;
+                this.Delete(`${folderObject}`);
             }
         }
-        return;
     }
 
     Delete(route) {
         const {files} = this;
-        
-        if(route.includes('/')) {
-            // if there is a given path then split it at the / and parse through the words and delete that specific object if it exists.
-            // save the folder title you need to delete by assigning it to a variable in this case deleteWord.
-            let splitRoute = route.split('/');
-            const deleteWord = splitRoute[splitRoute.length - 1];
-            
-            function fileSearch(files) {
-                
-                // base case if the length of splitRoute = 1 then you will be at the last folder which you can now delete
-                if(splitRoute.length === 1) {
-                    delete files[deleteWord]
-                    return files;
-                }
-                // if correct folder path does not exist then it will return this default message.
-                if(!files[splitRoute[0]]) {
-                    return `${splitRoute[0]} does not exist`;
-                }
+        if(this.isValidInput(route)) {
+            if(route.includes('/')) {
+                let targetRoute = route.split('/');
+                const deleteFolder = targetRoute[targetRoute.length - 1];
 
-                // continue parsing through nested object by passing in innerObj to fileSearch and use recursion. Make sure to shorten splitRoute array so you can check each folder. 
-                const innerObj = files[splitRoute[0]];
-                splitRoute = splitRoute.slice(1);
-                fileSearch(innerObj)
+                function fileSearch(files) {
+                    if(targetRoute.length === 1) {
+                        delete files[deleteFolder]
+                        return files;
+                    }
+                    if(!files[targetRoute[0]]) {
+                        console.log(`Cannot delete ${route} - ${targetRoute[0]} does not exist`);
+                        return;
+                    }
+                    const innerObj = files[targetRoute[0]];
+                    targetRoute = targetRoute.slice(1);
+                    fileSearch(innerObj)
+                }
+                return fileSearch(files);
+            } else {
+                delete files[route];
             }
-            return fileSearch(files);
-
-        } else {
-            delete files[route];
         }
-
     }
 
     List() {
         const { files } = this;
 
-        // this function grabs each nested object key and at each recursive call it will increment spacer and push the value into an array.
-        function fileList(obj, printList = [], spacer = 0) {
-            const keys = Object.keys(obj);
+        function folderList(obj, printList = [], spacer = 0) {
+            let folders = Object.keys(obj);
+            folders = folders.sort();
             let space = ' '.repeat(spacer);
-            for(let i = 0; i < keys.length; i++) {
-                printList.push(space + keys[i])
-                if(obj[keys[i]]) {
-                   spacer += 1;
-                   fileList(obj[keys[i]], printList, spacer);
+            for(let i = 0; i < folders.length; i++) {
+                printList.push(space + folders[i])
+                if(obj[folders[i]]) {
+                   spacer += 2;
+                   folderList(obj[folders[i]], printList, spacer);
                 } 
-                spacer -= 1;
+                spacer -= 2;
             }
             return printList
         }
-        // from the function call you iterate through the array and create a string that will print the folder directory.
-        const list = fileList(files)
+        const list = folderList(files)
         let string = '';
         for(let i = 0; i < list.length; i++) {
-            string += list[i] + '\n'
+            if(i < list.length - 1) {
+                string += list[i] + '\n';
+            } else {
+                string += list[i];
+            }
         }
+        console.log('LIST')
         return string;
     }
 
+    isValidInput(pathInput) {
+        return !/[~`!#$%\^&*+=\-\[\]\\';,{}|\\":<>\?]/g.test(pathInput);
+    }
 }
 
-const fileDirectory = new FileDirectory;
-console.log(fileDirectory.Create('fruits'));
-console.log(fileDirectory.Create('vegetables'));
-console.log(fileDirectory.Create('grains'));
-console.log(fileDirectory.Create('fruits/apples'));
-console.log(fileDirectory.Create('fruits/apples/fuji'));
-console.log(fileDirectory.Create('grains/squash'));
-console.log(fileDirectory.Move('grains/squash vegetables'));
-console.log(fileDirectory.Create('foods'));
-console.log(fileDirectory.Move('grains foods'));
-console.log(fileDirectory.Move('fruits foods'));
-console.log(fileDirectory.Move('vegetables foods'));
-console.log(fileDirectory.Delete('fruits/apples'));
-console.log(fileDirectory.Delete('foods/fruits/apples'));
-console.log(fileDirectory.List());
+const fileSystem = new FolderDirectory;
+
+let inputString = 
+`CREATE fruits
+CREATE vegetables
+CREATE grains
+CREATE fruits/apples
+CREATE fruits/apples/fuji
+LIST
+CREATE grains/squash
+MOVE grains/squash vegetables
+CREATE foods
+MOVE grains foods
+MOVE fruits foods
+MOVE vegetables foods
+LIST
+DELETE fruits/apples
+DELETE foods/fruits/apples
+LIST`
+
+inputString = inputString.split('\n')
+
+// iterate through input string and check first argument in order to invoke correct method. Log the input string. 
+
+for(let i = 0; i < inputString.length; i++) {
+    const splitInput = inputString[i].split(' ');
+    if(splitInput[0] === 'CREATE') {
+        console.log(inputString[i]);
+        fileSystem.Create(`${splitInput[1]}`);
+    } else if (splitInput[0] === 'MOVE') {
+        console.log(inputString[i])
+        fileSystem.Move(`${splitInput[1]} ${splitInput[2]}`);
+    } else if (splitInput[0] === 'DELETE') {
+        console.log(inputString[i])
+        fileSystem.Delete(`${splitInput[1]}`);
+    } else {
+        console.log(fileSystem.List());
+    }
+}
+
+
+module.exports = FolderDirectory;
+
+// const fileDirectory = new FileDirectory;
+// console.log('CREATE fruits')
+// fileDirectory.Create('fruits');
+// console.log('CREATE vegetables')
+// fileDirectory.Create('vegetables');
+// console.log('CREATE grains')
+// fileDirectory.Create('grains');
+// console.log('CREATE fruits/apples')
+// fileDirectory.Create('fruits/apples');
+// console.log('CREATE fruits/apples/fuji')
+// fileDirectory.Create('fruits/apples/fuji');
+// fileDirectory.List();
+// console.log('CREATE grains/squash')
+// fileDirectory.Create('grains/squash');
+// console.log('MOVE grains/squash vegetables', fileDirectory.Move('grains/squash vegetables'));
+// console.log('CREATE foods')
+// fileDirectory.Create('foods');
+// console.log('MOVE grains foods',fileDirectory.Move('grains foods'));
+// console.log('MOVE fruits foods',fileDirectory.Move('fruits foods'));
+// console.log('MOVE vegetables foods',fileDirectory.Move('vegetables foods'));
+// fileDirectory.List();
+// console.log('DELETE fruits/apples')
+// fileDirectory.Delete('fruits/apples');
+// console.log('DELETE foods/fruits/apples')
+// fileDirectory.Delete('foods/fruits/apples');
+// fileDirectory.List();
+
 
 
 
