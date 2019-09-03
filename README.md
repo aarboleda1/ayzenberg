@@ -25,21 +25,22 @@ In this challenge, I implemented commands for a filesystem simulator that allows
 • Once you have Node installed
 
     - In your terminal run command 
-        - $node ayzenbergCli.js
+        - $node directories.js
+        // AA: Do you need this "Command" argument? It's not specified in the prompt they gave you
         - There will be a "Command: " prompt in your terminal where you can start creating your filesytem simulator.
 
-###COMMANDS:
+### COMMANDS:
 
 ##### CREATE: 
-    create - creates a new folder
+    Creates a new folder
     - Add additional arguments for folder name. Cannot have any special characters besides '/' for file path.
-        
+        // AA: Try and remove the "Command" argument if possible
         - example: Command:create apple
                    Command:create apple/fuji
                    Command:create vegetable
 
 ##### MOVE:
-    move - moves folder to target folder
+    Moves folder to target folder
     - Add additional arguments for source folder and target folder. 
     - In order to move a directory you will type 'move' + ' ' + filepath + ' ' + target filepath
 
@@ -47,7 +48,8 @@ In this challenge, I implemented commands for a filesystem simulator that allows
                    Command:move apple vegetable
 
 ##### DELETE:
-    delete - delete folder from directory tree.
+    Delete folder from directory tree.
+    
     - Add additional arguments for source folder to be deleted. 
     - In order to delete a directory you will type 'delete' + filepath
 
@@ -59,7 +61,8 @@ In this challenge, I implemented commands for a filesystem simulator that allows
             • file path does not exist so it will return "Cannot delete vegetable/fuji - fuji does not exist"
 
 ##### LIST:
-    list - print directory tree.
+    Print directory tree.
+    
     - No additional arguments needed.
     In order to list a directory tree you will type 'list'
 
