@@ -1,4 +1,5 @@
 
+
 class FileDirectory {
 
     constructor(fileName) {
